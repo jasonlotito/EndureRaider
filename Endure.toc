@@ -1,0 +1,9 @@
+
+## Interface: 11302
+## Title: EndureRaider |cFFEE0000v1.0|r
+## Notes: Endure's best written addon!
+## Author: Endure
+## Version: 1.0
+## SavedVariables: EndureDB
+
+Endure.xml
