@@ -133,7 +133,7 @@ function LoadConfigFrame()
 
     -- Scrollable Panel Window
     ------------------------------
-    panel.ScrollFrame = CreateFrame("ScrollFrame","FarmLog_Scrollframe", panel, "UIPanelScrollFrameTemplate")
+    panel.ScrollFrame = CreateFrame("ScrollFrame","EndureRaider_SettingsPage", panel, "UIPanelScrollFrameTemplate")
     panel.ScrollFrame:EnableMouse(true)
     panel.ScrollFrame:EnableMouseWheel(true)
     panel.ScrollFrame:SetPoint("LEFT", 8)
@@ -144,10 +144,11 @@ function LoadConfigFrame()
 
     for x, targetName in ipairs({"Skull", "X", "Square", "Moon", "Triangle", "Diamond", "Circle", "Star"}) do 
         -- First Drop Down
-        local raidMembersFrame = CreateFrame("Frame", "FarmLogAHMinQualityDropdown", mfpanel, "UIDropDownMenuTemplate")
+        local raidMembersFrame = CreateFrame("Frame", "EndureRaider_TargetSelector", mfpanel, "UIDropDownMenuTemplate")
 
         DropDownFrames[targetName] = raidMembersFrame;
-        raidMembersFrame:SetPoint("TOPLEFT", mfpanel, "TOPLEFT", 100, -2-(30*x))
+        raidMembersFrame:SetPoint("TOPLEFT", mfpanel, "TOPLEFT", 100, 0-(30*x))
+        raidMembersFrame:SetHeight(30)
         UIDropDownMenu_SetText(raidMembersFrame, EndureDB.markers[targetName])
         UIDropDownMenu_SetWidth(raidMembersFrame, 100) 
         UIDropDownMenu_Initialize(raidMembersFrame, function (frame, level, menuList)
