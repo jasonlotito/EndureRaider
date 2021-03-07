@@ -144,10 +144,10 @@ function LoadConfigFrame()
 
     for x, targetName in ipairs({"Skull", "X", "Square", "Moon", "Triangle", "Diamond", "Circle", "Star"}) do 
         -- First Drop Down
-        local raidMembersFrame = CreateFrame("Frame", "FarmLogAHMinQualityDropdown", spanel, "UIDropDownMenuTemplate")
+        local raidMembersFrame = CreateFrame("Frame", "FarmLogAHMinQualityDropdown", mfpanel, "UIDropDownMenuTemplate")
 
         DropDownFrames[targetName] = raidMembersFrame;
-        raidMembersFrame:SetPoint("TOPLEFT", spanel, "TOPLEFT", 100, -2-(30*x))
+        raidMembersFrame:SetPoint("TOPLEFT", mfpanel, "TOPLEFT", 100, -2-(30*x))
         UIDropDownMenu_SetText(raidMembersFrame, EndureDB.markers[targetName])
         UIDropDownMenu_SetWidth(raidMembersFrame, 100) 
         UIDropDownMenu_Initialize(raidMembersFrame, function (frame, level, menuList)
@@ -180,7 +180,7 @@ function LoadConfigFrame()
             end 
         end)
 
-        EndureUI_Label(spanel, raidMembersFrame, targetName)
+        EndureUI_Label(mfpanel, raidMembersFrame, targetName)
     end
 end
 
