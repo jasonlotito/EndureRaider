@@ -34,7 +34,6 @@ EndureDB.markers = {
 
 local DropDownFrames = {}
 
-
 function explode (inputstr, sep)
     if sep == nil then
             sep = "%s"
@@ -54,7 +53,9 @@ function Endure_OnLoad(self)
     self:RegisterEvent("VARIABLES_LOADED"); -- eventually will call OnEvent
 end
 
-local function CreatePanelFrame(reference, title)
+local function CreatePanelFrame(reference, title, version)
+    -- local font = "Fonts\\FRIZQT__.TTF"
+
 	local panelframe = CreateFrame( "Frame", reference, UIParent);
 	panelframe.name = title
 	panelframe.Label = panelframe:CreateFontString(nil, 'ARTWORK', 'GameFontNormalLarge')
@@ -64,6 +65,16 @@ local function CreatePanelFrame(reference, title)
 	panelframe.Label:SetJustifyH("LEFT")
 	panelframe.Label:SetJustifyV("TOP")
 	panelframe.Label:SetText(title)
+
+    panelframe.Version = panelframe:CreateFontString(nil, 'ARTWORK', 'GameFontNormalLarge')
+    panelframe.Version:SetPoint("TOPRIGHT", panelframe, "TOPRIGHT", -20, -26)
+    panelframe.Version:SetHeight(15)
+    panelframe.Version:SetWidth(350)
+    panelframe.Version:SetJustifyH("RIGHT")
+    panelframe.Version:SetJustifyV("TOP")
+    panelframe.Version:SetText(version)
+    panelframe.Version:SetFont(GameFontNormal:GetFont(), 12)
+
 	return panelframe
 end
 
@@ -93,103 +104,104 @@ local function isInRaid(member)
     return isRaidMember;
 end
 
-function LoadConfigFrame() 
-    local panel = CreatePanelFrame("EndureConfigPanel", "Endure's MarkyMark")
-InterfaceOptions_AddCategory(panel)
-local font = "Fonts\\FRIZQT__.TTF"
-panel:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", insets = { left = 2, right = 2, top = 2, bottom = 2 },})
-panel:SetBackdropColor(0.06, 0.06, 0.06, .7)
-
-panel.Label:SetFont(font, 20)
-panel.Label:SetPoint("TOPLEFT", panel, "TOPLEFT", 16+6, -16-4)
-
-panel.Version = panel:CreateFontString(nil, 'ARTWORK', 'GameFontNormalLarge')
-panel.Version:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -20, -26)
-panel.Version:SetHeight(15)
-panel.Version:SetWidth(350)
-panel.Version:SetJustifyH("RIGHT")
-panel.Version:SetJustifyV("TOP")
-panel.Version:SetText("1.0")
-panel.Version:SetFont(font, 12)
-
-panel.DividerLine = panel:CreateTexture(nil, 'ARTWORK')
-panel.DividerLine:SetTexture("Interface\\Addons\\FarmLog\\assets\\ThinBlackLine")
-panel.DividerLine:SetSize(500, 12)
-panel.DividerLine:SetPoint("TOPLEFT", panel.Label, "BOTTOMLEFT", -6, -8)
-
--- Main Scrolled Frame
-------------------------------
-panel.MainFrame = CreateFrame("Frame")
-panel.MainFrame:SetWidth(500)
-panel.MainFrame:SetHeight(100) 	
-local mfpanel = panel.MainFrame;
-
--- Scrollable Panel Window
-------------------------------
-panel.ScrollFrame = CreateFrame("ScrollFrame","FarmLog_Scrollframe", panel, "UIPanelScrollFrameTemplate")
-panel.ScrollFrame:EnableMouse(true)
-panel.ScrollFrame:EnableMouseWheel(true)
-panel.ScrollFrame:SetPoint("LEFT", 8)
-panel.ScrollFrame:SetPoint("TOP", panel.DividerLine, "BOTTOM", 0, -8)
-panel.ScrollFrame:SetPoint("BOTTOMRIGHT", -32 , 8)
-panel.ScrollFrame:SetScrollChild(panel.MainFrame)
-
-for x, targetName in ipairs({"Skull", "X", "Square", "Moon", "Triangle", "Diamond", "Circle", "Star"}) do 
-    local raidMembersFrame = CreateFrame("Frame", "FarmLogAHMinQualityDropdown", mfpanel, "UIDropDownMenuTemplate")
-    DropDownFrames[targetName] = raidMembersFrame;
-    raidMembersFrame:SetPoint("TOPLEFT", mfpanel, "TOPLEFT", 100, -2-(30*x))
-
-    local helpframe = CreateFrame( "Frame", "HelpFrame"..x, raidMembersFrame);
-	-- helpframe.name = tostring(x)
-	helpframe.Label = helpframe:CreateFontString(nil, 'ARTWORK', 'GameFontNormalLarge')
-	helpframe.Label:SetPoint("TOPRIGHT", mfpanel, "TOPLEFT", 100, -2-(30*x))
-	helpframe.Label:SetJustifyH("RIGHT")
-	helpframe.Label:SetJustifyV("MIDDLE")
-	helpframe.Label:SetText(targetName)
-
-    UIDropDownMenu_SetText(raidMembersFrame, EndureDB.markers[targetName])
-    UIDropDownMenu_SetWidth(raidMembersFrame, 200) 
-    UIDropDownMenu_Initialize(raidMembersFrame, function (frame, level, menuList)
-        local info = UIDropDownMenu_CreateInfo()
-
-        info.func = function (self) 
-            local currentAssignee = EndureDB.markers[targetName]
-            if (currentAssignee ~= "" and isInRaid(currentAssignee)) then
-                SendChatMessage("You've been unassigned from your target. Relax!", "WHISPER", nil, GetUnitName(currentAssignee))    
-            end
-            EndureDB.markers[targetName] = self.value
-            UIDropDownMenu_SetText(raidMembersFrame, self.value)
-            if( self.value ~= "") then
-                SendChatMessage("You've been assigned {"..targetName.."}. If you forget, you can always whisper me !target.", "WHISPER", nil, GetUnitName(self.value))
-            end
-        end;
-
-        info.text = "Unassigned"
-        info.value = ""
-        
-        UIDropDownMenu_AddButton(info)
-
-        local groupCount = GetNumGroupMembers()
-        for i = 1,groupCount do
-            local name, rank, subgroup, level, class, fileName, 
-            zone, online, isDead, role, isML = GetRaidRosterInfo(i)
-            info.text = name.." - "..class
-            info.value = name
-            UIDropDownMenu_AddButton(info)
-        end 
-    end)
+function EndureUI_hr(panel, ref)
+    local DividerLine = panel:CreateTexture(nil, 'ARTWORK')
+    DividerLine:SetTexture("Interface\\Addons\\FarmLog\\assets\\ThinBlackLine")
+    DividerLine:SetSize(500, 12)
+    DividerLine:SetPoint("TOPLEFT", ref, "BOTTOMLEFT", -6, -8)
+    return DividerLine
 end
+
+function LoadConfigFrame() 
+    local panel = CreatePanelFrame("EndureConfigPanel", "Endure's MarkyMark", "1.0")
+    InterfaceOptions_AddCategory(panel)
+    
+    panel:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", insets = { left = 0, right = 2, top = 2, bottom = 2 },})
+    panel:SetBackdropColor(0.06, 0.06, 0.06, .7)
+
+    -- panel.Label:SetFont(font, 20)
+    -- panel.Label:SetPoint("TOPLEFT", panel, "TOPLEFT", 16+6, -16-4)
+
+    panel.DividerLine = EndureUI_hr(panel, panel.Label)
+
+    -- Main Scrolled Frame
+    ------------------------------
+    panel.MainFrame = CreateFrame("Frame")
+    panel.MainFrame:SetWidth(500)
+    panel.MainFrame:SetHeight(100) 	
+    local mfpanel = panel.MainFrame;
+
+    -- Scrollable Panel Window
+    ------------------------------
+    panel.ScrollFrame = CreateFrame("ScrollFrame","FarmLog_Scrollframe", panel, "UIPanelScrollFrameTemplate")
+    panel.ScrollFrame:EnableMouse(true)
+    panel.ScrollFrame:EnableMouseWheel(true)
+    panel.ScrollFrame:SetPoint("LEFT", 8)
+    panel.ScrollFrame:SetPoint("TOP", panel.DividerLine, "BOTTOM", 0, -8)
+    panel.ScrollFrame:SetPoint("BOTTOMRIGHT", -32 , 8)
+    panel.ScrollFrame:SetScrollChild(panel.MainFrame)
+    local spanel = panel.ScrollFrame
+
+    for x, targetName in ipairs({"Skull", "X", "Square", "Moon", "Triangle", "Diamond", "Circle", "Star"}) do 
+        -- First Drop Down
+        local raidMembersFrame = CreateFrame("Frame", "FarmLogAHMinQualityDropdown", spanel, "UIDropDownMenuTemplate")
+
+        DropDownFrames[targetName] = raidMembersFrame;
+        raidMembersFrame:SetPoint("TOPLEFT", spanel, "TOPLEFT", 100, -2-(30*x))
+        UIDropDownMenu_SetText(raidMembersFrame, EndureDB.markers[targetName])
+        UIDropDownMenu_SetWidth(raidMembersFrame, 100) 
+        UIDropDownMenu_Initialize(raidMembersFrame, function (frame, level, menuList)
+            local info = UIDropDownMenu_CreateInfo()
+
+            info.func = function (self) 
+                local currentAssignee = EndureDB.markers[targetName]
+                if (currentAssignee ~= "" and isInRaid(currentAssignee)) then
+                    SendChatMessage("You've been unassigned from your target. Relax!", "WHISPER", nil, GetUnitName(currentAssignee))    
+                end
+                EndureDB.markers[targetName] = self.value
+                UIDropDownMenu_SetText(raidMembersFrame, self.value)
+                if( self.value ~= "") then
+                    SendChatMessage("You've been assigned {"..targetName.."}. If you forget, you can always whisper me !target.", "WHISPER", nil, GetUnitName(self.value))
+                end
+            end;
+
+            info.text = "Unassigned"
+            info.value = ""
+            
+            UIDropDownMenu_AddButton(info)
+
+            local groupCount = GetNumGroupMembers()
+            for i = 1,groupCount do
+                local name, rank, subgroup, level, class, fileName, 
+                zone, online, isDead, role, isML = GetRaidRosterInfo(i)
+                info.text = name.." - "..class
+                info.value = name
+                UIDropDownMenu_AddButton(info)
+            end 
+        end)
+
+        EndureUI_Label(spanel, raidMembersFrame, targetName)
+    end
+end
+
+-- Attaches the top right to the top left of another element
+function EndureUI_Label(container, relativeTo, text)
+    local labelFrame = CreateFrame( "Frame", nil, container);
+    -- helpframe.name = tostring(x)
+    labelFrame.label = labelFrame:CreateFontString(nil, 'ARTWORK', 'GameFontNormalLarge')
+    labelFrame.label:SetHeight(relativeTo:GetHeight())
+    labelFrame.label:SetPoint("TOPRIGHT", relativeTo, "TOPLEFT", 0, 0)
+    labelFrame.label:SetJustifyH("RIGHT")
+    labelFrame.label:SetJustifyV("MIDDLE")
+    labelFrame.label:SetText(text)
+    labelFrame.label:SetFont(GameFontNormal:GetFont(), 12)
+    return labelFrame;
 end
 
 -- OnEvent
 function Endure_OnEvent(self, event)
-    -- VARIABLES_LOADED event
-    print("OnEvent Loaded", event)
     if (event == "VARIABLES_LOADED") then
-        -- execute event code in this function
         EndureEvent_VARIABLES_LOADED();
-        
-        -- print(EndureDB.Testing)
     end
 end
 
@@ -275,7 +287,6 @@ local function EventHandler_UpdateMouseoverUnit(event)
     end
 
     local guid = UnitGUID("mouseover")
-
     local hoverName = GetUnitName("mouseover")
     local unitFound = false
 
@@ -379,7 +390,7 @@ local function MarkyClearAssignmentsHandler()
     end
 end
 
-local function eventHandler(self, event, ...)
+local function EventHandler(self, event, ...)
     if (event == "CHAT_MSG_WHISPER") then
         print(arg1)
         EventHandler_ChatMsgWhisper(event, ...)
@@ -401,5 +412,5 @@ SlashCmdList["MARKYCLEARASSIGNMENTS"] = MarkyClearAssignmentsHandler
 local frame = CreateFrame("FRAME", "EndureMarkyMark");
 frame:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
 frame:RegisterEvent("CHAT_MSG_WHISPER")
-frame:SetScript("OnEvent", eventHandler)
+frame:SetScript("OnEvent", EventHandler)
 
