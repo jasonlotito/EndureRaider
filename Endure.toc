@@ -1,7 +1,7 @@
 
 ## Interface: 11302
-## Title: EndureRaider |cFFEE0000v1.0|r
-## Notes: Endure's best written addon!
+## Title: Endure |cFFEE0000v1.0|r
+## Notes: Raid Management Addon for WoW Classic
 ## Author: Endure
 ## Version: 1.0
 ## SavedVariables: EndureDB
